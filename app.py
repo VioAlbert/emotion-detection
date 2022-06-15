@@ -2,15 +2,34 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import nltk
-from nltk.stem import WordNetLemmatizer 
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import RegexpTokenizer
+from nltk.corpus import wordnet
 import contractions
 import pickle
 import re
 
 nltk.download('wordnet')
 nltk.download('omw-1.4')
+nltk.download('averaged_perceptron_tagger')
 
+@st.cache
+def get_wordnet_pos(word):
+  """Map POS tag to first character lemmatize() accepts"""
+  tag = nltk.pos_tag([word])[0][1][0].upper()
+  tag_dict = {"J": wordnet.ADJ,
+              "N": wordnet.NOUN,
+              "V": wordnet.VERB,
+              "R": wordnet.ADV}
+  return tag_dict.get(tag, wordnet.NOUN)
+
+tokenizer = RegexpTokenizer(r'\w+')
 lemmatizer = WordNetLemmatizer()
+
+@st.cache
+def yukTokenize(kalimat):
+  tokenized = ' '.join(w.lower() for w in tokenizer.tokenize(kalimat))
+  return tokenized
 
 @st.cache
 def yukDecontract(kalimat):
@@ -37,12 +56,13 @@ def yukDecontractPakaiLibrary(sentence):
 def yukLemmatize(sentence):
   lemmatized_word = []
   for word in sentence.split():
-    lemmatized_word.append(lemmatizer.lemmatize(word))
+    lemmatized_word.append(lemmatizer.lemmatize(word, get_wordnet_pos(word)))
   lemmatized = ' '.join(lemmatized_word)
   return lemmatized
 
 @st.cache
 def yukBersihin(sentence):
+  sentence = yukTokenize(sentence)
   sentence = yukDecontractPakaiLibrary(sentence)
   sentence = yukDecontract(sentence)
   sentence = yukLemmatize(sentence)
@@ -61,6 +81,7 @@ def main():
 
   if st.button("Predict"):
     text = yukBersihin(text)
+    print(text)
 
     # load tfidf
     picklefile = open("./pickles/tfidf.pkl", "rb")
