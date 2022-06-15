@@ -7,6 +7,9 @@ import contractions
 import pickle
 import re
 
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+
 lemmatizer = WordNetLemmatizer()
 
 @st.cache
