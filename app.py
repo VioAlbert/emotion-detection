@@ -77,6 +77,8 @@ def yukBersihin(sentence):
 def main():
   st.title('Emotion Prediction From Text')
 
+  st.write('This app will detect six different emotion from your text input, i.e. joy, sadness, anger, fear, love, surprise.')
+
   text = st.text_input('Text')
 
   if st.button("Predict"):
