@@ -94,7 +94,7 @@ def main():
     X.columns = tfidf.get_feature_names_out()
 
     # load model
-    picklefile = open("./pickles/svm-model.pkl", "rb")
+    picklefile = open("./pickles/grid-svm-model.pkl", "rb")
     model = pickle.load(picklefile)
     picklefile.close()
 
